@@ -42,6 +42,7 @@ internal static class JsonPayloads
               "TransactionAmount": 50.00,
               "TransactionCurrencyCode": "USD",
               "TransactionDate": "2024-01-10T00:00:00",
+              "PaymentTypeID": "CASH",
               "IsItemized": {{isItemized.ToString().ToLower()}},
               "Custom1": { "Code": "C1", "Value": "Custom Value 1", "Type": "Text", "ListItemID": null }
             }
@@ -60,6 +61,9 @@ internal static class JsonPayloads
               "ReportID": "{{reportId}}",
               "ExpenseTypeCode": "BRKFT",
               "ExpenseTypeName": "Breakfast",
+              "ReportOwnerID": "owner@example.com",
+              "SpendCategoryCode": "MEALS",
+              "SpendCategoryName": "Meals & Entertainment",
               "TransactionAmount": 20.00,
               "TransactionDate": "2024-01-10T00:00:00",
               "Custom1": { "Code": "C1", "Value": "Item Value", "Type": "Text", "ListItemID": null }
