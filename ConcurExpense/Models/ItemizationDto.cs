@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace ConcurExpense.Models;
 
 public record ItemizationDto(
-    [property: JsonPropertyName("ID")] string? ID,
+    string? ID,
     [property: JsonPropertyName("EntryID")] string? EntryID,
     [property: JsonPropertyName("ReportID")] string? ReportID,
     [property: JsonPropertyName("ExpenseTypeCode")] string? ExpenseTypeCode,
@@ -11,7 +11,7 @@ public record ItemizationDto(
     [property: JsonPropertyName("BusinessPurpose")] string? BusinessPurpose,
     [property: JsonPropertyName("TransactionAmount")] decimal? TransactionAmount,
     [property: JsonPropertyName("PostedAmount")] decimal? PostedAmount,
-    [property: JsonPropertyName("CurrencyCode")] string? CurrencyCode,
+    string? CurrencyCode,
     [property: JsonPropertyName("TransactionDate")] DateTime? TransactionDate,
     [property: JsonPropertyName("VendorDescription")] string? VendorDescription,
     [property: JsonPropertyName("LocationName")] string? LocationName,
@@ -24,5 +24,5 @@ public record ItemizationDto(
     [property: JsonPropertyName("Custom3")] CustomFieldDto? Custom3,
     [property: JsonPropertyName("Custom4")] CustomFieldDto? Custom4,
     [property: JsonPropertyName("Custom5")] CustomFieldDto? Custom5,
-    [property: JsonPropertyName("URI")] string? URI
-);
+    string? URI
+) : ExpenseBaseDto(ID, CurrencyCode, URI);

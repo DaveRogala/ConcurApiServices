@@ -3,12 +3,12 @@ using System.Text.Json.Serialization;
 namespace ConcurExpense.Models;
 
 public record ReportDto(
-    [property: JsonPropertyName("ID")] string? ID,
+    string? ID,
     [property: JsonPropertyName("Name")] string? Name,
     [property: JsonPropertyName("Total")] decimal? Total,
     [property: JsonPropertyName("AmountDueCompanyCard")] decimal? AmountDueCompanyCard,
     [property: JsonPropertyName("AmountDueEmployee")] decimal? AmountDueEmployee,
-    [property: JsonPropertyName("CurrencyCode")] string? CurrencyCode,
+    string? CurrencyCode,
     [property: JsonPropertyName("Country")] string? Country,
     [property: JsonPropertyName("CountrySubdivision")] string? CountrySubdivision,
     [property: JsonPropertyName("CreateDate")] DateTime? CreateDate,
@@ -36,5 +36,5 @@ public record ReportDto(
     [property: JsonPropertyName("OrgUnit5")] CustomFieldDto? OrgUnit5,
     [property: JsonPropertyName("OrgUnit6")] CustomFieldDto? OrgUnit6,
     [property: JsonPropertyName("WorkflowActionURL")] string? WorkflowActionURL,
-    [property: JsonPropertyName("URI")] string? URI
-);
+    string? URI
+) : ExpenseBaseDto(ID, CurrencyCode, URI);

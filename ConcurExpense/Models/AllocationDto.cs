@@ -3,12 +3,12 @@ using System.Text.Json.Serialization;
 namespace ConcurExpense.Models;
 
 public record AllocationDto(
-    [property: JsonPropertyName("ID")] string? ID,
+    string? ID,
     [property: JsonPropertyName("EntryID")] string? EntryID,
     [property: JsonPropertyName("ReportID")] string? ReportID,
     [property: JsonPropertyName("Percentage")] decimal? Percentage,
     [property: JsonPropertyName("Amount")] decimal? Amount,
-    [property: JsonPropertyName("CurrencyCode")] string? CurrencyCode,
+    string? CurrencyCode,
     [property: JsonPropertyName("IsHidden")] bool? IsHidden,
     [property: JsonPropertyName("IsPercentEdited")] bool? IsPercentEdited,
     [property: JsonPropertyName("AccountCode1")] string? AccountCode1,
@@ -39,5 +39,5 @@ public record AllocationDto(
     [property: JsonPropertyName("Custom18")] CustomFieldDto? Custom18,
     [property: JsonPropertyName("Custom19")] CustomFieldDto? Custom19,
     [property: JsonPropertyName("Custom20")] CustomFieldDto? Custom20,
-    [property: JsonPropertyName("URI")] string? URI
-);
+    string? URI
+) : ExpenseBaseDto(ID, CurrencyCode, URI);
