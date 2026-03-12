@@ -1,0 +1,41 @@
+using System.Text.Json.Serialization;
+
+namespace ConcurExpense.Models;
+
+public record EntryDto(
+    [property: JsonPropertyName("ID")] string? ID,
+    [property: JsonPropertyName("ReportID")] string? ReportID,
+    [property: JsonPropertyName("ExpenseTypeCode")] string? ExpenseTypeCode,
+    [property: JsonPropertyName("ExpenseTypeName")] string? ExpenseTypeName,
+    [property: JsonPropertyName("BusinessPurpose")] string? BusinessPurpose,
+    [property: JsonPropertyName("TransactionAmount")] decimal? TransactionAmount,
+    [property: JsonPropertyName("TransactionCurrencyCode")] string? TransactionCurrencyCode,
+    [property: JsonPropertyName("PostedAmount")] decimal? PostedAmount,
+    [property: JsonPropertyName("ApprovedAmount")] string? ApprovedAmount,
+    [property: JsonPropertyName("CurrencyCode")] string? CurrencyCode,
+    [property: JsonPropertyName("TransactionDate")] DateTime? TransactionDate,
+    [property: JsonPropertyName("VendorDescription")] string? VendorDescription,
+    [property: JsonPropertyName("LocationName")] string? LocationName,
+    [property: JsonPropertyName("LocationCountry")] string? LocationCountry,
+    [property: JsonPropertyName("LocationSubdivision")] string? LocationSubdivision,
+    [property: JsonPropertyName("IsItemized")] bool? IsItemized,
+    [property: JsonPropertyName("IsBillable")] bool? IsBillable,
+    [property: JsonPropertyName("IsPersonal")] bool? IsPersonal,
+    [property: JsonPropertyName("PaymentTypeCode")] string? PaymentTypeCode,
+    [property: JsonPropertyName("PaymentTypeName")] string? PaymentTypeName,
+    [property: JsonPropertyName("ReceiptRequired")] string? ReceiptRequired,
+    [property: JsonPropertyName("HasImage")] bool? HasImage,
+    [property: JsonPropertyName("HasVat")] bool? HasVat,
+    [property: JsonPropertyName("OrgUnit1")] CustomFieldDto? OrgUnit1,
+    [property: JsonPropertyName("OrgUnit2")] CustomFieldDto? OrgUnit2,
+    [property: JsonPropertyName("OrgUnit3")] CustomFieldDto? OrgUnit3,
+    [property: JsonPropertyName("OrgUnit4")] CustomFieldDto? OrgUnit4,
+    [property: JsonPropertyName("OrgUnit5")] CustomFieldDto? OrgUnit5,
+    [property: JsonPropertyName("OrgUnit6")] CustomFieldDto? OrgUnit6,
+    [property: JsonPropertyName("Custom1")] CustomFieldDto? Custom1,
+    [property: JsonPropertyName("Custom2")] CustomFieldDto? Custom2,
+    [property: JsonPropertyName("Custom3")] CustomFieldDto? Custom3,
+    [property: JsonPropertyName("Custom4")] CustomFieldDto? Custom4,
+    [property: JsonPropertyName("Custom5")] CustomFieldDto? Custom5,
+    [property: JsonPropertyName("URI")] string? URI
+);

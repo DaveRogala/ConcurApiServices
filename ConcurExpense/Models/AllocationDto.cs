@@ -1,0 +1,43 @@
+using System.Text.Json.Serialization;
+
+namespace ConcurExpense.Models;
+
+public record AllocationDto(
+    [property: JsonPropertyName("ID")] string? ID,
+    [property: JsonPropertyName("EntryID")] string? EntryID,
+    [property: JsonPropertyName("ReportID")] string? ReportID,
+    [property: JsonPropertyName("Percentage")] decimal? Percentage,
+    [property: JsonPropertyName("Amount")] decimal? Amount,
+    [property: JsonPropertyName("CurrencyCode")] string? CurrencyCode,
+    [property: JsonPropertyName("IsHidden")] bool? IsHidden,
+    [property: JsonPropertyName("IsPercentEdited")] bool? IsPercentEdited,
+    [property: JsonPropertyName("AccountCode1")] string? AccountCode1,
+    [property: JsonPropertyName("AccountCode2")] string? AccountCode2,
+    [property: JsonPropertyName("OrgUnit1")] CustomFieldDto? OrgUnit1,
+    [property: JsonPropertyName("OrgUnit2")] CustomFieldDto? OrgUnit2,
+    [property: JsonPropertyName("OrgUnit3")] CustomFieldDto? OrgUnit3,
+    [property: JsonPropertyName("OrgUnit4")] CustomFieldDto? OrgUnit4,
+    [property: JsonPropertyName("OrgUnit5")] CustomFieldDto? OrgUnit5,
+    [property: JsonPropertyName("OrgUnit6")] CustomFieldDto? OrgUnit6,
+    [property: JsonPropertyName("Custom1")] CustomFieldDto? Custom1,
+    [property: JsonPropertyName("Custom2")] CustomFieldDto? Custom2,
+    [property: JsonPropertyName("Custom3")] CustomFieldDto? Custom3,
+    [property: JsonPropertyName("Custom4")] CustomFieldDto? Custom4,
+    [property: JsonPropertyName("Custom5")] CustomFieldDto? Custom5,
+    [property: JsonPropertyName("Custom6")] CustomFieldDto? Custom6,
+    [property: JsonPropertyName("Custom7")] CustomFieldDto? Custom7,
+    [property: JsonPropertyName("Custom8")] CustomFieldDto? Custom8,
+    [property: JsonPropertyName("Custom9")] CustomFieldDto? Custom9,
+    [property: JsonPropertyName("Custom10")] CustomFieldDto? Custom10,
+    [property: JsonPropertyName("Custom11")] CustomFieldDto? Custom11,
+    [property: JsonPropertyName("Custom12")] CustomFieldDto? Custom12,
+    [property: JsonPropertyName("Custom13")] CustomFieldDto? Custom13,
+    [property: JsonPropertyName("Custom14")] CustomFieldDto? Custom14,
+    [property: JsonPropertyName("Custom15")] CustomFieldDto? Custom15,
+    [property: JsonPropertyName("Custom16")] CustomFieldDto? Custom16,
+    [property: JsonPropertyName("Custom17")] CustomFieldDto? Custom17,
+    [property: JsonPropertyName("Custom18")] CustomFieldDto? Custom18,
+    [property: JsonPropertyName("Custom19")] CustomFieldDto? Custom19,
+    [property: JsonPropertyName("Custom20")] CustomFieldDto? Custom20,
+    [property: JsonPropertyName("URI")] string? URI
+);

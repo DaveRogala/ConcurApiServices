@@ -1,0 +1,40 @@
+using System.Text.Json.Serialization;
+
+namespace ConcurExpense.Models;
+
+public record ReportDto(
+    [property: JsonPropertyName("ID")] string? ID,
+    [property: JsonPropertyName("Name")] string? Name,
+    [property: JsonPropertyName("Total")] decimal? Total,
+    [property: JsonPropertyName("AmountDueCompanyCard")] decimal? AmountDueCompanyCard,
+    [property: JsonPropertyName("AmountDueEmployee")] decimal? AmountDueEmployee,
+    [property: JsonPropertyName("CurrencyCode")] string? CurrencyCode,
+    [property: JsonPropertyName("Country")] string? Country,
+    [property: JsonPropertyName("CountrySubdivision")] string? CountrySubdivision,
+    [property: JsonPropertyName("CreateDate")] DateTime? CreateDate,
+    [property: JsonPropertyName("SubmitDate")] DateTime? SubmitDate,
+    [property: JsonPropertyName("ProcessingPaymentDate")] DateTime? ProcessingPaymentDate,
+    [property: JsonPropertyName("PaidDate")] DateTime? PaidDate,
+    [property: JsonPropertyName("ApprovalStatusCode")] string? ApprovalStatusCode,
+    [property: JsonPropertyName("ApprovalStatusName")] string? ApprovalStatusName,
+    [property: JsonPropertyName("PaymentStatusCode")] string? PaymentStatusCode,
+    [property: JsonPropertyName("PaymentStatusName")] string? PaymentStatusName,
+    [property: JsonPropertyName("LastModifiedDate")] DateTime? LastModifiedDate,
+    [property: JsonPropertyName("OwnerLoginID")] string? OwnerLoginID,
+    [property: JsonPropertyName("OwnerName")] string? OwnerName,
+    [property: JsonPropertyName("PolicyID")] string? PolicyID,
+    [property: JsonPropertyName("PolicyName")] string? PolicyName,
+    [property: JsonPropertyName("PurposeJustification")] string? PurposeJustification,
+    [property: JsonPropertyName("ReportDate")] DateTime? ReportDate,
+    [property: JsonPropertyName("HasException")] bool? HasException,
+    [property: JsonPropertyName("HasImages")] bool? HasImages,
+    [property: JsonPropertyName("LedgerName")] string? LedgerName,
+    [property: JsonPropertyName("OrgUnit1")] CustomFieldDto? OrgUnit1,
+    [property: JsonPropertyName("OrgUnit2")] CustomFieldDto? OrgUnit2,
+    [property: JsonPropertyName("OrgUnit3")] CustomFieldDto? OrgUnit3,
+    [property: JsonPropertyName("OrgUnit4")] CustomFieldDto? OrgUnit4,
+    [property: JsonPropertyName("OrgUnit5")] CustomFieldDto? OrgUnit5,
+    [property: JsonPropertyName("OrgUnit6")] CustomFieldDto? OrgUnit6,
+    [property: JsonPropertyName("WorkflowActionURL")] string? WorkflowActionURL,
+    [property: JsonPropertyName("URI")] string? URI
+);
