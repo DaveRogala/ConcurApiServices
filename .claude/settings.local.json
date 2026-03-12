@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"/Volumes/External Drive/Source/repos/ConcurReporting\" && dotnet build 2>&1)",
+      "Bash(cd \"/Volumes/External Drive/Source/repos/ConcurReporting\" && dotnet new xunit -n ConcurExpense.Tests --framework net8.0 && dotnet sln add ConcurExpense.Tests/ConcurExpense.Tests.csproj && dotnet add ConcurExpense.Tests/ConcurExpense.Tests.csproj reference ConcurExpense/ConcurExpense.csproj)"
+    ]
+  }
+}
