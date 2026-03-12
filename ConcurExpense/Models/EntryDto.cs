@@ -26,6 +26,7 @@ public record EntryDto(
     [property: JsonPropertyName("ReceiptRequired")] string? ReceiptRequired,
     [property: JsonPropertyName("HasImage")] bool? HasImage,
     [property: JsonPropertyName("HasVat")] bool? HasVat,
+    [property: JsonPropertyName("Journey")] JourneyDto? Journey,
     [property: JsonPropertyName("OrgUnit1")] CustomFieldDto? OrgUnit1,
     [property: JsonPropertyName("OrgUnit2")] CustomFieldDto? OrgUnit2,
     [property: JsonPropertyName("OrgUnit3")] CustomFieldDto? OrgUnit3,
