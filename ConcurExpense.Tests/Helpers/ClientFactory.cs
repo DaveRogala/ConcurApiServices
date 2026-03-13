@@ -30,7 +30,11 @@ internal static class ClientFactory
             factory.Object,
             tokenService.Object,
             options,
-            NullLogger<ConcurExpenseClient>.Instance);
+            NullLogger<ConcurExpenseClient>.Instance)
+        {
+            // Skip real waits in tests; resilience logic is verified via request counts.
+            Delay = (_, _) => Task.CompletedTask
+        };
 
         return (client, handler);
     }
