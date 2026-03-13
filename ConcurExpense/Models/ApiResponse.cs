@@ -4,13 +4,8 @@ namespace ConcurExpense.Models;
 
 internal class ApiResponse<T>
 {
-    [JsonPropertyName("Items")]
     public List<T> Items { get; set; } = [];
-
-    [JsonPropertyName("NextPage")]
     public string? NextPage { get; set; }
-
-    [JsonPropertyName("TotalCount")]
     public int? TotalCount { get; set; }
 }
 

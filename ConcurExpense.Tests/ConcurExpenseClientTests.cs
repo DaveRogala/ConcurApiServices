@@ -170,7 +170,7 @@ public class ConcurExpenseClientTests
     public async Task GetEntries_ReturnsMappedItems()
     {
         var (client, handler) = ClientFactory.Create();
-        handler.Enqueue(JsonPayloads.EntryPage("RPT1", isItemized: false, ids: ["E1", "E2"]));
+        handler.Enqueue(JsonPayloads.EntryPage("RPT1", ids: ["E1", "E2"]));
 
         var entries = await client.GetEntriesAsync("RPT1");
 
@@ -185,7 +185,7 @@ public class ConcurExpenseClientTests
     public async Task GetEntries_MapsCustomFieldObjects()
     {
         var (client, handler) = ClientFactory.Create();
-        handler.Enqueue(JsonPayloads.EntryPage("RPT1", isItemized: false, ids: ["E1"]));
+        handler.Enqueue(JsonPayloads.EntryPage("RPT1", ids: ["E1"]));
 
         var entries = await client.GetEntriesAsync("RPT1");
 
@@ -235,10 +235,10 @@ public class ConcurExpenseClientTests
     public async Task GetEntries_PaginatesThroughAllPages()
     {
         var (client, handler) = ClientFactory.Create(baseUrl: "https://api.example.com");
-        handler.Enqueue(JsonPayloads.EntryPage("RPT1", isItemized: false,
+        handler.Enqueue(JsonPayloads.EntryPage("RPT1",
             nextPage: "https://api.example.com/expense/expensereport/v3.0/reports/RPT1/entries?offset=25",
             ids: ["E1"]));
-        handler.Enqueue(JsonPayloads.EntryPage("RPT1", isItemized: false, ids: ["E2"]));
+        handler.Enqueue(JsonPayloads.EntryPage("RPT1", ids: ["E2"]));
 
         var entries = await client.GetEntriesAsync("RPT1");
 
@@ -324,26 +324,23 @@ public class ConcurExpenseClientTests
     public async Task GetAllocations_ReturnsMappedItems()
     {
         var (client, handler) = ClientFactory.Create();
-        handler.Enqueue(JsonPayloads.AllocationPage("RPT1", ids: ["A1", "A2"]));
+        handler.Enqueue(JsonPayloads.AllocationPage(ids: ["A1", "A2"]));
 
         var allocs = await client.GetAllocationsAsync("RPT1");
 
         Assert.Equal(2, allocs.Count);
         Assert.Equal("A1", allocs[0].ID);
-        Assert.Equal("RPT1", allocs[0].ReportID);
-        Assert.Equal(100m, allocs[0].Percentage);
+        Assert.Equal("entry-1", allocs[0].EntryID);
+        Assert.Equal("100.00", allocs[0].Percentage);
     }
 
     [Fact]
     public async Task GetAllocations_MapsCustomFieldObjects()
     {
         var (client, handler) = ClientFactory.Create();
-        handler.Enqueue(JsonPayloads.AllocationPage("RPT1", ids: ["A1"]));
+        handler.Enqueue(JsonPayloads.AllocationPage(ids: ["A1"]));
 
         var allocs = await client.GetAllocationsAsync("RPT1");
-
-        Assert.NotNull(allocs[0].OrgUnit1);
-        Assert.Equal("OU1", allocs[0].OrgUnit1!.Code);
 
         Assert.NotNull(allocs[0].Custom1);
         Assert.Equal("GL1", allocs[0].Custom1!.Code);
@@ -378,10 +375,10 @@ public class ConcurExpenseClientTests
     public async Task GetAllocations_PaginatesThroughAllPages()
     {
         var (client, handler) = ClientFactory.Create(baseUrl: "https://api.example.com");
-        handler.Enqueue(JsonPayloads.AllocationPage("RPT1",
+        handler.Enqueue(JsonPayloads.AllocationPage(
             nextPage: "https://api.example.com/expense/expensereport/v3.0/allocations?offset=25",
             ids: ["A1"]));
-        handler.Enqueue(JsonPayloads.AllocationPage("RPT1", ids: ["A2"]));
+        handler.Enqueue(JsonPayloads.AllocationPage(ids: ["A2"]));
 
         var allocs = await client.GetAllocationsAsync("RPT1");
 

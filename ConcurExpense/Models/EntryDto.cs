@@ -1,108 +1,104 @@
-using System.Text.Json.Serialization;
-
 namespace ConcurExpense.Models;
 
 public record EntryDto : ExpenseBaseDto
 {
-    [JsonPropertyName("ReportID")]
-    public required string ReportID { get; init; }
-
-    [JsonPropertyName("ExpenseTypeCode")]
+    // Required
     public required string ExpenseTypeCode { get; init; }
-
-    [JsonPropertyName("TransactionAmount")]
+    public required string PaymentTypeID { get; init; }
+    public required string ReportID { get; init; }
     public required decimal TransactionAmount { get; init; }
-
-    [JsonPropertyName("TransactionCurrencyCode")]
     public required string TransactionCurrencyCode { get; init; }
-
-    [JsonPropertyName("TransactionDate")]
     public required DateTime TransactionDate { get; init; }
 
-    [JsonPropertyName("PaymentTypeID")]
-    public required string PaymentTypeID { get; init; }
-
-    [JsonPropertyName("ExpenseTypeName")]
+    // Read-only / optional fields
+    public string? AllocationType { get; init; }
+    public decimal ApprovedAmount { get; init; }
+    public string? Comment { get; init; }
+    public string? CompanyCardTransactionID { get; init; }
+    public string? Description { get; init; }
+    public string? ElectronicReceiptID { get; init; }
+    public string? EmployeeBankAccountID { get; init; }
+    public decimal ExchangeRate { get; init; }
+    public string? ExpenseID { get; init; }
     public string? ExpenseTypeName { get; init; }
-
-    [JsonPropertyName("BusinessPurpose")]
-    public string? BusinessPurpose { get; init; }
-
-    [JsonPropertyName("PostedAmount")]
-    public decimal? PostedAmount { get; init; }
-
-    [JsonPropertyName("ApprovedAmount")]
-    public string? ApprovedAmount { get; init; }
-
-    [JsonPropertyName("VendorDescription")]
-    public string? VendorDescription { get; init; }
-
-    [JsonPropertyName("LocationName")]
-    public string? LocationName { get; init; }
-
-    [JsonPropertyName("LocationCountry")]
-    public string? LocationCountry { get; init; }
-
-    [JsonPropertyName("LocationSubdivision")]
-    public string? LocationSubdivision { get; init; }
-
-    [JsonPropertyName("IsItemized")]
-    public bool? IsItemized { get; init; }
-
-    [JsonPropertyName("IsBillable")]
-    public bool? IsBillable { get; init; }
-
-    [JsonPropertyName("IsPersonal")]
-    public bool? IsPersonal { get; init; }
-
-    [JsonPropertyName("PaymentTypeCode")]
-    public string? PaymentTypeCode { get; init; }
-
-    [JsonPropertyName("PaymentTypeName")]
-    public string? PaymentTypeName { get; init; }
-
-    [JsonPropertyName("ReceiptRequired")]
-    public string? ReceiptRequired { get; init; }
-
-    [JsonPropertyName("HasImage")]
-    public bool? HasImage { get; init; }
-
-    [JsonPropertyName("HasVat")]
-    public bool? HasVat { get; init; }
-
-    [JsonPropertyName("Journey")]
+    public string? FormID { get; init; }
+    public bool HasAppliedCashAdvance { get; init; }
+    public bool HasAttendees { get; init; }
+    public bool HasComments { get; init; }
+    public bool HasExceptions { get; init; }
+    public bool HasImage { get; init; }
+    public bool HasItemizations { get; init; }
+    public bool HasVAT { get; init; }
+    public bool IsBillable { get; init; }
+    public bool IsImageRequired { get; init; }
+    public bool IsPaidByExpensePay { get; init; }
+    public bool IsPersonal { get; init; }
+    public bool IsPersonalCardCharge { get; init; }
     public JourneyDto? Journey { get; init; }
+    public DateTime? LastModified { get; init; }
+    public string? LocationCountry { get; init; }
+    public string? LocationID { get; init; }
+    public string? LocationName { get; init; }
+    public string? LocationSubdivision { get; init; }
+    public string? PaymentTypeName { get; init; }
+    public decimal PostedAmount { get; init; }
+    public bool ReceiptReceived { get; init; }
+    public string? ReportOwnerID { get; init; }
+    public string? SpendCategoryCode { get; init; }
+    public string? SpendCategoryName { get; init; }
+    public string? TaxReceiptType { get; init; }
+    public string? TripID { get; init; }
+    public string? VendorDescription { get; init; }
+    public string? VendorListItemID { get; init; }
+    public string? VendorListItemName { get; init; }
 
-    [JsonPropertyName("OrgUnit1")]
+    // Org unit fields
     public CustomFieldDto? OrgUnit1 { get; init; }
-
-    [JsonPropertyName("OrgUnit2")]
     public CustomFieldDto? OrgUnit2 { get; init; }
-
-    [JsonPropertyName("OrgUnit3")]
     public CustomFieldDto? OrgUnit3 { get; init; }
-
-    [JsonPropertyName("OrgUnit4")]
     public CustomFieldDto? OrgUnit4 { get; init; }
-
-    [JsonPropertyName("OrgUnit5")]
     public CustomFieldDto? OrgUnit5 { get; init; }
-
-    [JsonPropertyName("OrgUnit6")]
     public CustomFieldDto? OrgUnit6 { get; init; }
 
-    [JsonPropertyName("Custom1")]
+    // Custom fields
     public CustomFieldDto? Custom1 { get; init; }
-
-    [JsonPropertyName("Custom2")]
     public CustomFieldDto? Custom2 { get; init; }
-
-    [JsonPropertyName("Custom3")]
     public CustomFieldDto? Custom3 { get; init; }
-
-    [JsonPropertyName("Custom4")]
     public CustomFieldDto? Custom4 { get; init; }
-
-    [JsonPropertyName("Custom5")]
     public CustomFieldDto? Custom5 { get; init; }
+    public CustomFieldDto? Custom6 { get; init; }
+    public CustomFieldDto? Custom7 { get; init; }
+    public CustomFieldDto? Custom8 { get; init; }
+    public CustomFieldDto? Custom9 { get; init; }
+    public CustomFieldDto? Custom10 { get; init; }
+    public CustomFieldDto? Custom11 { get; init; }
+    public CustomFieldDto? Custom12 { get; init; }
+    public CustomFieldDto? Custom13 { get; init; }
+    public CustomFieldDto? Custom14 { get; init; }
+    public CustomFieldDto? Custom15 { get; init; }
+    public CustomFieldDto? Custom16 { get; init; }
+    public CustomFieldDto? Custom17 { get; init; }
+    public CustomFieldDto? Custom18 { get; init; }
+    public CustomFieldDto? Custom19 { get; init; }
+    public CustomFieldDto? Custom20 { get; init; }
+    public CustomFieldDto? Custom21 { get; init; }
+    public CustomFieldDto? Custom22 { get; init; }
+    public CustomFieldDto? Custom23 { get; init; }
+    public CustomFieldDto? Custom24 { get; init; }
+    public CustomFieldDto? Custom25 { get; init; }
+    public CustomFieldDto? Custom26 { get; init; }
+    public CustomFieldDto? Custom27 { get; init; }
+    public CustomFieldDto? Custom28 { get; init; }
+    public CustomFieldDto? Custom29 { get; init; }
+    public CustomFieldDto? Custom30 { get; init; }
+    public CustomFieldDto? Custom31 { get; init; }
+    public CustomFieldDto? Custom32 { get; init; }
+    public CustomFieldDto? Custom33 { get; init; }
+    public CustomFieldDto? Custom34 { get; init; }
+    public CustomFieldDto? Custom35 { get; init; }
+    public CustomFieldDto? Custom36 { get; init; }
+    public CustomFieldDto? Custom37 { get; init; }
+    public CustomFieldDto? Custom38 { get; init; }
+    public CustomFieldDto? Custom39 { get; init; }
+    public CustomFieldDto? Custom40 { get; init; }
 }

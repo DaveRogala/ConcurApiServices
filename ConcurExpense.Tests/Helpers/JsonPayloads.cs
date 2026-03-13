@@ -31,7 +31,7 @@ internal static class JsonPayloads
         return $$"""{ "Items": [{{items}}], "NextPage": {{nextPageJson}}, "TotalCount": {{ids.Length}} }""";
     }
 
-    public static string EntryPage(string reportId, bool isItemized, string? nextPage = null, params object[] ids)
+    public static string EntryPage(string reportId, string? nextPage = null, params object[] ids)
     {
         var items = string.Join(",\n", ids.Select(id => $$"""
             {
@@ -43,7 +43,6 @@ internal static class JsonPayloads
               "TransactionCurrencyCode": "USD",
               "TransactionDate": "2024-01-10T00:00:00",
               "PaymentTypeID": "CASH",
-              "IsItemized": {{isItemized.ToString().ToLower()}},
               "Custom1": { "Code": "C1", "Value": "Custom Value 1", "Type": "Text", "ListItemID": null }
             }
             """));
@@ -64,7 +63,6 @@ internal static class JsonPayloads
               "ReportOwnerID": "owner@example.com",
               "SpendCategoryCode": "MEALS",
               "SpendCategoryName": "Meals & Entertainment",
-              "TransactionAmount": 20.00,
               "TransactionDate": "2024-01-10T00:00:00",
               "Custom1": { "Code": "C1", "Value": "Item Value", "Type": "Text", "ListItemID": null }
             }
@@ -74,17 +72,15 @@ internal static class JsonPayloads
         return $$"""{ "Items": [{{items}}], "NextPage": {{nextPageJson}}, "TotalCount": {{ids.Length}} }""";
     }
 
-    public static string AllocationPage(string reportId, string? nextPage = null, params object[] ids)
+    public static string AllocationPage(string? nextPage = null, params object[] ids)
     {
         var items = string.Join(",\n", ids.Select(id => $$"""
             {
               "ID": "{{id}}",
-              "ReportID": "{{reportId}}",
               "EntryID": "entry-1",
-              "Percentage": 100.00,
-              "Amount": 100.00,
-              "CurrencyCode": "USD",
-              "OrgUnit1": { "Code": "OU1", "Value": "Org 1", "Type": "List", "ListItemID": "ou1" },
+              "Percentage": "100.00",
+              "IsHidden": false,
+              "IsPercentEdited": false,
               "Custom1": { "Code": "GL1", "Value": "GL Account", "Type": "List", "ListItemID": "gl1" }
             }
             """));
