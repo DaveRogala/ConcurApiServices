@@ -274,8 +274,8 @@ public class ConcurExpenseClientTests
         handler.Enqueue($$"""
             {
               "Items": [
-                { "ID": "E1", "ReportID": "RPT1", "IsItemized": false, "TransactionAmount": 10.00 },
-                { "ID": "E2", "ReportID": "RPT1", "IsItemized": true,  "TransactionAmount": 20.00 }
+                { "ID": "E1", "ReportID": "RPT1", "ExpenseTypeCode": "MEALS", "TransactionAmount": 10.00, "TransactionCurrencyCode": "USD", "TransactionDate": "2024-01-10T00:00:00", "PaymentTypeID": "CASH", "IsItemized": false },
+                { "ID": "E2", "ReportID": "RPT1", "ExpenseTypeCode": "MEALS", "TransactionAmount": 20.00, "TransactionCurrencyCode": "USD", "TransactionDate": "2024-01-10T00:00:00", "PaymentTypeID": "CASH", "IsItemized": true  }
               ],
               "NextPage": null
             }

@@ -2,39 +2,98 @@ using System.Text.Json.Serialization;
 
 namespace ConcurExpense.Models;
 
-public record ReportDto(
-    string? ID,
-    [property: JsonPropertyName("Name")] string? Name,
-    [property: JsonPropertyName("Total")] decimal? Total,
-    [property: JsonPropertyName("AmountDueCompanyCard")] decimal? AmountDueCompanyCard,
-    [property: JsonPropertyName("AmountDueEmployee")] decimal? AmountDueEmployee,
-    string? CurrencyCode,
-    [property: JsonPropertyName("Country")] string? Country,
-    [property: JsonPropertyName("CountrySubdivision")] string? CountrySubdivision,
-    [property: JsonPropertyName("CreateDate")] DateTime? CreateDate,
-    [property: JsonPropertyName("SubmitDate")] DateTime? SubmitDate,
-    [property: JsonPropertyName("ProcessingPaymentDate")] DateTime? ProcessingPaymentDate,
-    [property: JsonPropertyName("PaidDate")] DateTime? PaidDate,
-    [property: JsonPropertyName("ApprovalStatusCode")] string? ApprovalStatusCode,
-    [property: JsonPropertyName("ApprovalStatusName")] string? ApprovalStatusName,
-    [property: JsonPropertyName("PaymentStatusCode")] string? PaymentStatusCode,
-    [property: JsonPropertyName("PaymentStatusName")] string? PaymentStatusName,
-    [property: JsonPropertyName("LastModifiedDate")] DateTime? LastModifiedDate,
-    [property: JsonPropertyName("OwnerLoginID")] string? OwnerLoginID,
-    [property: JsonPropertyName("OwnerName")] string? OwnerName,
-    [property: JsonPropertyName("PolicyID")] string? PolicyID,
-    [property: JsonPropertyName("PolicyName")] string? PolicyName,
-    [property: JsonPropertyName("PurposeJustification")] string? PurposeJustification,
-    [property: JsonPropertyName("ReportDate")] DateTime? ReportDate,
-    [property: JsonPropertyName("HasException")] bool? HasException,
-    [property: JsonPropertyName("HasImages")] bool? HasImages,
-    [property: JsonPropertyName("LedgerName")] string? LedgerName,
-    [property: JsonPropertyName("OrgUnit1")] CustomFieldDto? OrgUnit1,
-    [property: JsonPropertyName("OrgUnit2")] CustomFieldDto? OrgUnit2,
-    [property: JsonPropertyName("OrgUnit3")] CustomFieldDto? OrgUnit3,
-    [property: JsonPropertyName("OrgUnit4")] CustomFieldDto? OrgUnit4,
-    [property: JsonPropertyName("OrgUnit5")] CustomFieldDto? OrgUnit5,
-    [property: JsonPropertyName("OrgUnit6")] CustomFieldDto? OrgUnit6,
-    [property: JsonPropertyName("WorkflowActionURL")] string? WorkflowActionURL,
-    string? URI
-) : ExpenseBaseDto(ID, CurrencyCode, URI);
+public record ReportDto : ExpenseBaseDto
+{
+    [JsonPropertyName("Name")]
+    public required string Name { get; init; }
+
+    [JsonPropertyName("Total")]
+    public decimal? Total { get; init; }
+
+    [JsonPropertyName("AmountDueCompanyCard")]
+    public decimal? AmountDueCompanyCard { get; init; }
+
+    [JsonPropertyName("AmountDueEmployee")]
+    public decimal? AmountDueEmployee { get; init; }
+
+    [JsonPropertyName("Country")]
+    public string? Country { get; init; }
+
+    [JsonPropertyName("CountrySubdivision")]
+    public string? CountrySubdivision { get; init; }
+
+    [JsonPropertyName("CreateDate")]
+    public DateTime? CreateDate { get; init; }
+
+    [JsonPropertyName("SubmitDate")]
+    public DateTime? SubmitDate { get; init; }
+
+    [JsonPropertyName("ProcessingPaymentDate")]
+    public DateTime? ProcessingPaymentDate { get; init; }
+
+    [JsonPropertyName("PaidDate")]
+    public DateTime? PaidDate { get; init; }
+
+    [JsonPropertyName("ApprovalStatusCode")]
+    public string? ApprovalStatusCode { get; init; }
+
+    [JsonPropertyName("ApprovalStatusName")]
+    public string? ApprovalStatusName { get; init; }
+
+    [JsonPropertyName("PaymentStatusCode")]
+    public string? PaymentStatusCode { get; init; }
+
+    [JsonPropertyName("PaymentStatusName")]
+    public string? PaymentStatusName { get; init; }
+
+    [JsonPropertyName("LastModifiedDate")]
+    public DateTime? LastModifiedDate { get; init; }
+
+    [JsonPropertyName("OwnerLoginID")]
+    public string? OwnerLoginID { get; init; }
+
+    [JsonPropertyName("OwnerName")]
+    public string? OwnerName { get; init; }
+
+    [JsonPropertyName("PolicyID")]
+    public string? PolicyID { get; init; }
+
+    [JsonPropertyName("PolicyName")]
+    public string? PolicyName { get; init; }
+
+    [JsonPropertyName("PurposeJustification")]
+    public string? PurposeJustification { get; init; }
+
+    [JsonPropertyName("ReportDate")]
+    public DateTime? ReportDate { get; init; }
+
+    [JsonPropertyName("HasException")]
+    public bool? HasException { get; init; }
+
+    [JsonPropertyName("HasImages")]
+    public bool? HasImages { get; init; }
+
+    [JsonPropertyName("LedgerName")]
+    public string? LedgerName { get; init; }
+
+    [JsonPropertyName("OrgUnit1")]
+    public CustomFieldDto? OrgUnit1 { get; init; }
+
+    [JsonPropertyName("OrgUnit2")]
+    public CustomFieldDto? OrgUnit2 { get; init; }
+
+    [JsonPropertyName("OrgUnit3")]
+    public CustomFieldDto? OrgUnit3 { get; init; }
+
+    [JsonPropertyName("OrgUnit4")]
+    public CustomFieldDto? OrgUnit4 { get; init; }
+
+    [JsonPropertyName("OrgUnit5")]
+    public CustomFieldDto? OrgUnit5 { get; init; }
+
+    [JsonPropertyName("OrgUnit6")]
+    public CustomFieldDto? OrgUnit6 { get; init; }
+
+    [JsonPropertyName("WorkflowActionURL")]
+    public string? WorkflowActionURL { get; init; }
+}

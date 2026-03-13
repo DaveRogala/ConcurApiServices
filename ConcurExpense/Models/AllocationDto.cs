@@ -2,42 +2,107 @@ using System.Text.Json.Serialization;
 
 namespace ConcurExpense.Models;
 
-public record AllocationDto(
-    string? ID,
-    [property: JsonPropertyName("EntryID")] string? EntryID,
-    [property: JsonPropertyName("ReportID")] string? ReportID,
-    [property: JsonPropertyName("Percentage")] decimal? Percentage,
-    [property: JsonPropertyName("Amount")] decimal? Amount,
-    string? CurrencyCode,
-    [property: JsonPropertyName("IsHidden")] bool? IsHidden,
-    [property: JsonPropertyName("IsPercentEdited")] bool? IsPercentEdited,
-    [property: JsonPropertyName("AccountCode1")] string? AccountCode1,
-    [property: JsonPropertyName("AccountCode2")] string? AccountCode2,
-    [property: JsonPropertyName("OrgUnit1")] CustomFieldDto? OrgUnit1,
-    [property: JsonPropertyName("OrgUnit2")] CustomFieldDto? OrgUnit2,
-    [property: JsonPropertyName("OrgUnit3")] CustomFieldDto? OrgUnit3,
-    [property: JsonPropertyName("OrgUnit4")] CustomFieldDto? OrgUnit4,
-    [property: JsonPropertyName("OrgUnit5")] CustomFieldDto? OrgUnit5,
-    [property: JsonPropertyName("OrgUnit6")] CustomFieldDto? OrgUnit6,
-    [property: JsonPropertyName("Custom1")] CustomFieldDto? Custom1,
-    [property: JsonPropertyName("Custom2")] CustomFieldDto? Custom2,
-    [property: JsonPropertyName("Custom3")] CustomFieldDto? Custom3,
-    [property: JsonPropertyName("Custom4")] CustomFieldDto? Custom4,
-    [property: JsonPropertyName("Custom5")] CustomFieldDto? Custom5,
-    [property: JsonPropertyName("Custom6")] CustomFieldDto? Custom6,
-    [property: JsonPropertyName("Custom7")] CustomFieldDto? Custom7,
-    [property: JsonPropertyName("Custom8")] CustomFieldDto? Custom8,
-    [property: JsonPropertyName("Custom9")] CustomFieldDto? Custom9,
-    [property: JsonPropertyName("Custom10")] CustomFieldDto? Custom10,
-    [property: JsonPropertyName("Custom11")] CustomFieldDto? Custom11,
-    [property: JsonPropertyName("Custom12")] CustomFieldDto? Custom12,
-    [property: JsonPropertyName("Custom13")] CustomFieldDto? Custom13,
-    [property: JsonPropertyName("Custom14")] CustomFieldDto? Custom14,
-    [property: JsonPropertyName("Custom15")] CustomFieldDto? Custom15,
-    [property: JsonPropertyName("Custom16")] CustomFieldDto? Custom16,
-    [property: JsonPropertyName("Custom17")] CustomFieldDto? Custom17,
-    [property: JsonPropertyName("Custom18")] CustomFieldDto? Custom18,
-    [property: JsonPropertyName("Custom19")] CustomFieldDto? Custom19,
-    [property: JsonPropertyName("Custom20")] CustomFieldDto? Custom20,
-    string? URI
-) : ExpenseBaseDto(ID, CurrencyCode, URI);
+public record AllocationDto : ExpenseBaseDto
+{
+    [JsonPropertyName("EntryID")]
+    public string? EntryID { get; init; }
+
+    [JsonPropertyName("ReportID")]
+    public string? ReportID { get; init; }
+
+    [JsonPropertyName("Percentage")]
+    public decimal? Percentage { get; init; }
+
+    [JsonPropertyName("Amount")]
+    public decimal? Amount { get; init; }
+
+    [JsonPropertyName("IsHidden")]
+    public bool? IsHidden { get; init; }
+
+    [JsonPropertyName("IsPercentEdited")]
+    public bool? IsPercentEdited { get; init; }
+
+    [JsonPropertyName("AccountCode1")]
+    public string? AccountCode1 { get; init; }
+
+    [JsonPropertyName("AccountCode2")]
+    public string? AccountCode2 { get; init; }
+
+    [JsonPropertyName("OrgUnit1")]
+    public CustomFieldDto? OrgUnit1 { get; init; }
+
+    [JsonPropertyName("OrgUnit2")]
+    public CustomFieldDto? OrgUnit2 { get; init; }
+
+    [JsonPropertyName("OrgUnit3")]
+    public CustomFieldDto? OrgUnit3 { get; init; }
+
+    [JsonPropertyName("OrgUnit4")]
+    public CustomFieldDto? OrgUnit4 { get; init; }
+
+    [JsonPropertyName("OrgUnit5")]
+    public CustomFieldDto? OrgUnit5 { get; init; }
+
+    [JsonPropertyName("OrgUnit6")]
+    public CustomFieldDto? OrgUnit6 { get; init; }
+
+    [JsonPropertyName("Custom1")]
+    public CustomFieldDto? Custom1 { get; init; }
+
+    [JsonPropertyName("Custom2")]
+    public CustomFieldDto? Custom2 { get; init; }
+
+    [JsonPropertyName("Custom3")]
+    public CustomFieldDto? Custom3 { get; init; }
+
+    [JsonPropertyName("Custom4")]
+    public CustomFieldDto? Custom4 { get; init; }
+
+    [JsonPropertyName("Custom5")]
+    public CustomFieldDto? Custom5 { get; init; }
+
+    [JsonPropertyName("Custom6")]
+    public CustomFieldDto? Custom6 { get; init; }
+
+    [JsonPropertyName("Custom7")]
+    public CustomFieldDto? Custom7 { get; init; }
+
+    [JsonPropertyName("Custom8")]
+    public CustomFieldDto? Custom8 { get; init; }
+
+    [JsonPropertyName("Custom9")]
+    public CustomFieldDto? Custom9 { get; init; }
+
+    [JsonPropertyName("Custom10")]
+    public CustomFieldDto? Custom10 { get; init; }
+
+    [JsonPropertyName("Custom11")]
+    public CustomFieldDto? Custom11 { get; init; }
+
+    [JsonPropertyName("Custom12")]
+    public CustomFieldDto? Custom12 { get; init; }
+
+    [JsonPropertyName("Custom13")]
+    public CustomFieldDto? Custom13 { get; init; }
+
+    [JsonPropertyName("Custom14")]
+    public CustomFieldDto? Custom14 { get; init; }
+
+    [JsonPropertyName("Custom15")]
+    public CustomFieldDto? Custom15 { get; init; }
+
+    [JsonPropertyName("Custom16")]
+    public CustomFieldDto? Custom16 { get; init; }
+
+    [JsonPropertyName("Custom17")]
+    public CustomFieldDto? Custom17 { get; init; }
+
+    [JsonPropertyName("Custom18")]
+    public CustomFieldDto? Custom18 { get; init; }
+
+    [JsonPropertyName("Custom19")]
+    public CustomFieldDto? Custom19 { get; init; }
+
+    [JsonPropertyName("Custom20")]
+    public CustomFieldDto? Custom20 { get; init; }
+}

@@ -2,13 +2,29 @@ using System.Text.Json.Serialization;
 
 namespace ConcurExpense.Models;
 
-public record JourneyDto(
-    [property: JsonPropertyName("StartLocation")] string? StartLocation,
-    [property: JsonPropertyName("EndLocation")] string? EndLocation,
-    [property: JsonPropertyName("OdometerStart")] decimal? OdometerStart,
-    [property: JsonPropertyName("OdometerEnd")] decimal? OdometerEnd,
-    [property: JsonPropertyName("BusinessDistance")] decimal? BusinessDistance,
-    [property: JsonPropertyName("PersonalDistance")] decimal? PersonalDistance,
-    [property: JsonPropertyName("NumberOfPassengers")] int? NumberOfPassengers,
-    [property: JsonPropertyName("UnitOfMeasure")] string? UnitOfMeasure
-);
+public record JourneyDto
+{
+    [JsonPropertyName("StartLocation")]
+    public required string StartLocation { get; init; }
+
+    [JsonPropertyName("EndLocation")]
+    public required string EndLocation { get; init; }
+
+    [JsonPropertyName("UnitOfMeasure")]
+    public required string UnitOfMeasure { get; init; }
+
+    [JsonPropertyName("OdometerStart")]
+    public decimal? OdometerStart { get; init; }
+
+    [JsonPropertyName("OdometerEnd")]
+    public decimal? OdometerEnd { get; init; }
+
+    [JsonPropertyName("BusinessDistance")]
+    public decimal? BusinessDistance { get; init; }
+
+    [JsonPropertyName("PersonalDistance")]
+    public decimal? PersonalDistance { get; init; }
+
+    [JsonPropertyName("NumberOfPassengers")]
+    public int? NumberOfPassengers { get; init; }
+}
