@@ -38,9 +38,12 @@ public interface IConcurExpenseClient
 
     /// <summary>
     /// Retrieves all allocations for the given report, automatically paging through results.
+    /// Optionally filter by <paramref name="entryId"/> or <paramref name="itemizationId"/>.
     /// </summary>
     Task<List<AllocationDto>> GetAllocationsAsync(
         string reportId,
+        string? entryId = null,
+        string? itemizationId = null,
         int? limit = null,
         string? user = null,
         CancellationToken cancellationToken = default);

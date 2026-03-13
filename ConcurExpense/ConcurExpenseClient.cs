@@ -113,6 +113,8 @@ internal class ConcurExpenseClient : IConcurExpenseClient
 
     public async Task<List<AllocationDto>> GetAllocationsAsync(
         string reportId,
+        string? entryId = null,
+        string? itemizationId = null,
         int? limit = null,
         string? user = null,
         CancellationToken cancellationToken = default)
@@ -123,6 +125,8 @@ internal class ConcurExpenseClient : IConcurExpenseClient
         {
             q["user"] = user ?? "ALL";
             q["reportID"] = reportId;
+            if (!string.IsNullOrWhiteSpace(entryId)) q["entryID"] = entryId;
+            if (!string.IsNullOrWhiteSpace(itemizationId)) q["itemizationID"] = itemizationId;
             if (limit.HasValue) q["limit"] = limit.Value.ToString();
         });
 

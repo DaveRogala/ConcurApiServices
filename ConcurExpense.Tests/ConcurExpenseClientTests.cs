@@ -390,6 +390,43 @@ public class ConcurExpenseClientTests
     }
 
     [Fact]
+    public async Task GetAllocations_WithEntryId_IncludesEntryIdInQuery()
+    {
+        var (client, handler) = ClientFactory.Create();
+        handler.Enqueue(JsonPayloads.EmptyPage());
+
+        await client.GetAllocationsAsync("RPT1", entryId: "E1");
+
+        var query = HttpUtility.ParseQueryString(handler.Requests[0].RequestUri!.Query);
+        Assert.Equal("E1", query["entryID"]);
+    }
+
+    [Fact]
+    public async Task GetAllocations_WithItemizationId_IncludesItemizationIdInQuery()
+    {
+        var (client, handler) = ClientFactory.Create();
+        handler.Enqueue(JsonPayloads.EmptyPage());
+
+        await client.GetAllocationsAsync("RPT1", itemizationId: "ITM1");
+
+        var query = HttpUtility.ParseQueryString(handler.Requests[0].RequestUri!.Query);
+        Assert.Equal("ITM1", query["itemizationID"]);
+    }
+
+    [Fact]
+    public async Task GetAllocations_WithoutOptionalIds_OmitsEntryAndItemizationFromQuery()
+    {
+        var (client, handler) = ClientFactory.Create();
+        handler.Enqueue(JsonPayloads.EmptyPage());
+
+        await client.GetAllocationsAsync("RPT1");
+
+        var query = HttpUtility.ParseQueryString(handler.Requests[0].RequestUri!.Query);
+        Assert.Null(query["entryID"]);
+        Assert.Null(query["itemizationID"]);
+    }
+
+    [Fact]
     public async Task GetAllocations_ThrowsForNullReportId()
     {
         var (client, _) = ClientFactory.Create();
