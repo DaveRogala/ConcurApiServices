@@ -105,7 +105,7 @@ public class ConcurExpenseClientTests
     {
         var (client, handler) = ClientFactory.Create(baseUrl: "https://api.example.com");
         handler.Enqueue(JsonPayloads.ReportPage(
-            nextPage: "https://api.example.com/expense/expensereport/v3.0/reports?offset=25&user=ALL",
+            nextPage: "https://api.example.com/api/v3.0/expense/reports?offset=25&user=ALL",
             ids: ["R1"]));
         handler.Enqueue(JsonPayloads.ReportPage(ids: ["R2"]));
 
@@ -121,7 +121,7 @@ public class ConcurExpenseClientTests
     public async Task GetReports_SecondPageUsesNextPageUrl()
     {
         var (client, handler) = ClientFactory.Create(baseUrl: "https://api.example.com");
-        var nextPageUrl = "https://api.example.com/expense/expensereport/v3.0/reports?offset=25&user=ALL";
+        var nextPageUrl = "https://api.example.com/api/v3.0/expense/reports?offset=25&user=ALL";
         handler.Enqueue(JsonPayloads.ReportPage(nextPage: nextPageUrl, ids: ["R1"]));
         handler.Enqueue(JsonPayloads.ReportPage(ids: ["R2"]));
 
@@ -207,14 +207,15 @@ public class ConcurExpenseClientTests
     }
 
     [Fact]
-    public async Task GetEntries_ReportIdAppearsInPath()
+    public async Task GetEntries_ReportIdAppearsInQuery()
     {
-        var (client, handler) = ClientFactory.Create(baseUrl: "https://api.example.com");
+        var (client, handler) = ClientFactory.Create();
         handler.Enqueue(JsonPayloads.EmptyPage());
 
         await client.GetEntriesAsync("RPT-XYZ");
 
-        Assert.Contains("/reports/RPT-XYZ/entries", handler.Requests[0].RequestUri!.AbsolutePath);
+        var query = HttpUtility.ParseQueryString(handler.Requests[0].RequestUri!.Query);
+        Assert.Equal("RPT-XYZ", query["reportID"]);
     }
 
     [Fact]
@@ -236,7 +237,7 @@ public class ConcurExpenseClientTests
     {
         var (client, handler) = ClientFactory.Create(baseUrl: "https://api.example.com");
         handler.Enqueue(JsonPayloads.EntryPage("RPT1",
-            nextPage: "https://api.example.com/expense/expensereport/v3.0/reports/RPT1/entries?offset=25",
+            nextPage: "https://api.example.com/api/v3.0/expense/entries?reportID=RPT1&offset=25",
             ids: ["E1"]));
         handler.Enqueue(JsonPayloads.EntryPage("RPT1", ids: ["E2"]));
 
@@ -249,26 +250,30 @@ public class ConcurExpenseClientTests
     // ── GetItemizationsAsync ─────────────────────────────────────────────────
 
     [Fact]
-    public async Task GetItemizations_WithoutEntryId_UsesReportLevelPath()
+    public async Task GetItemizations_WithoutEntryId_IncludesOnlyReportIdInQuery()
     {
-        var (client, handler) = ClientFactory.Create(baseUrl: "https://api.example.com");
+        var (client, handler) = ClientFactory.Create();
         handler.Enqueue(JsonPayloads.ItemizationPage("E1", "RPT1", ids: ["ITM1"]));
 
         await client.GetItemizationsAsync("RPT1");
 
-        Assert.Contains("/reports/RPT1/entries/itemizations", handler.Requests[0].RequestUri!.AbsolutePath);
+        var query = HttpUtility.ParseQueryString(handler.Requests[0].RequestUri!.Query);
+        Assert.Equal("RPT1", query["reportID"]);
+        Assert.Null(query["entryID"]);
         Assert.Single(handler.Requests);
     }
 
     [Fact]
-    public async Task GetItemizations_WithEntryId_UsesEntryLevelPath()
+    public async Task GetItemizations_WithEntryId_IncludesEntryIdInQuery()
     {
-        var (client, handler) = ClientFactory.Create(baseUrl: "https://api.example.com");
+        var (client, handler) = ClientFactory.Create();
         handler.Enqueue(JsonPayloads.ItemizationPage("E1", "RPT1", ids: ["ITM1"]));
 
         await client.GetItemizationsAsync("RPT1", entryId: "E1");
 
-        Assert.Contains("/reports/RPT1/entries/E1/itemizations", handler.Requests[0].RequestUri!.AbsolutePath);
+        var query = HttpUtility.ParseQueryString(handler.Requests[0].RequestUri!.Query);
+        Assert.Equal("RPT1", query["reportID"]);
+        Assert.Equal("E1", query["entryID"]);
         Assert.Single(handler.Requests);
     }
 
@@ -376,7 +381,7 @@ public class ConcurExpenseClientTests
     {
         var (client, handler) = ClientFactory.Create(baseUrl: "https://api.example.com");
         handler.Enqueue(JsonPayloads.AllocationPage(
-            nextPage: "https://api.example.com/expense/expensereport/v3.0/allocations?offset=25",
+            nextPage: "https://api.example.com/api/v3.0/expense/allocations?offset=25",
             ids: ["A1"]));
         handler.Enqueue(JsonPayloads.AllocationPage(ids: ["A2"]));
 

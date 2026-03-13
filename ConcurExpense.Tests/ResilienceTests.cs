@@ -157,7 +157,7 @@ public class ResilienceTests
         // BUT that would hit the consecutive limit first. So we need the success
         // to interrupt the streak. Strategy: 4 rate-limits, success (page 1 with nextPage),
         // then 1 more rate-limit (page 2 call) to push loopRateLimitCount to 5.
-        var nextPage = "https://api.example.com/expense/expensereport/v3.0/reports?offset=25";
+        var nextPage = "https://api.example.com/api/v3.0/expense/reports?offset=25";
 
         for (var i = 0; i < 4; i++)
             handler.EnqueueError(HttpStatusCode.TooManyRequests);

@@ -11,11 +11,10 @@ namespace ConcurExpense;
 
 internal class ConcurExpenseClient : IConcurExpenseClient
 {
-    private const string ReportsPath = "/expense/expensereport/v3.0/reports";
-    private const string EntriesPath = "/expense/expensereport/v3.0/reports/{0}/entries";
-    private const string ItemizationsPath = "/expense/expensereport/v3.0/reports/{0}/entries/{1}/itemizations";
-    private const string ItemizationsReportPath = "/expense/expensereport/v3.0/reports/{0}/entries/itemizations";
-    private const string AllocationsPath = "/expense/expensereport/v3.0/allocations";
+    private const string ReportsPath = "/api/v3.0/expense/reports";
+    private const string EntriesPath = "/api/v3.0/expense/entries";
+    private const string ItemizationsPath = "/api/v3.0/expense/itemizations";
+    private const string AllocationsPath = "/api/v3.0/expense/allocations";
 
     private const int MaxServerErrorRetries = 3;
     private const int MaxRateLimitPerLoop = 5;
@@ -90,11 +89,11 @@ internal class ConcurExpenseClient : IConcurExpenseClient
         var query = BuildQuery(q =>
         {
             q["user"] = user ?? "ALL";
+            q["reportID"] = reportId;
             if (limit.HasValue) q["limit"] = limit.Value.ToString();
         });
 
-        var path = string.Format(EntriesPath, Uri.EscapeDataString(reportId));
-        var url = $"{_baseUrl}{path}?{query}";
+        var url = $"{_baseUrl}{EntriesPath}?{query}";
 
         _logger.LogInformation("Fetching Concur entries for report {ReportId}.", reportId);
 
@@ -113,22 +112,17 @@ internal class ConcurExpenseClient : IConcurExpenseClient
         var query = BuildQuery(q =>
         {
             q["user"] = user ?? "ALL";
+            q["reportID"] = reportId;
+            if (!string.IsNullOrWhiteSpace(entryId)) q["entryID"] = entryId;
             if (limit.HasValue) q["limit"] = limit.Value.ToString();
         });
 
-        string path;
         if (!string.IsNullOrWhiteSpace(entryId))
-        {
-            path = string.Format(ItemizationsPath, Uri.EscapeDataString(reportId), Uri.EscapeDataString(entryId));
             _logger.LogInformation("Fetching Concur itemizations for report {ReportId}, entry {EntryId}.", reportId, entryId);
-        }
         else
-        {
-            path = string.Format(ItemizationsReportPath, Uri.EscapeDataString(reportId));
             _logger.LogInformation("Fetching Concur itemizations for report {ReportId}.", reportId);
-        }
 
-        var url = $"{_baseUrl}{path}?{query}";
+        var url = $"{_baseUrl}{ItemizationsPath}?{query}";
         return await FetchAllPagesAsync<ItemizationDto>(url, cancellationToken);
     }
 
