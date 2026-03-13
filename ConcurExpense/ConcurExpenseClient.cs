@@ -187,6 +187,7 @@ internal class ConcurExpenseClient : IConcurExpenseClient
             var token = await _tokenService.GetAccessTokenAsync(cancellationToken);
             var client = _httpClientFactory.CreateClient(ConcurHttpClients.Api);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             using var response = await client.GetAsync(url, cancellationToken);
 
