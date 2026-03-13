@@ -9,6 +9,10 @@ A .NET 8 class library for retrieving expense data from the [SAP Concur Expense 
 - Optional HTTP proxy support with credentials
 - Strongly-typed record DTOs including nested `CustomFieldDto` for `OrgUnit*` and `Custom*` fields
 - Designed for dependency injection via `IServiceCollection`
+- Built-in resilience:
+  - Enforces a minimum 100ms gap between API calls (≤ 600 calls/min per vendor recommendation)
+  - Retries on 5xx server errors up to 3 times with a 10-second delay
+  - Retries on 429 Too Many Requests with a 10-second delay; escalates the minimum call interval to 1 second after 5 rate-limit responses within a single request batch; fails after 5 consecutive 429 responses
 
 ## Installation
 
@@ -111,38 +115,75 @@ List<EntryDto> entries = await concur.GetEntriesAsync(
 
 ### GetItemizationsAsync
 
-Fetches all entries for the report, then retrieves itemizations for each itemized entry. All itemizations are returned in a single flat list.
+Retrieves all itemizations for a report. If `entryId` is provided, results are scoped to that specific entry.
 
 ```csharp
+// All itemizations for the report
 List<ItemizationDto> itemizations = await concur.GetItemizationsAsync(
     reportId: "ABC123",
     limit:    100,
     user:     "jane@example.com");
-```
 
-### GetAllocationsAsync
-
-```csharp
-List<AllocationDto> allocations = await concur.GetAllocationsAsync(
+// Itemizations for a specific entry
+List<ItemizationDto> itemizations = await concur.GetItemizationsAsync(
     reportId: "ABC123",
+    entryId:  "E456",
     limit:    100,
     user:     "jane@example.com");
 ```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `reportId` | `string` | Required. The report ID |
+| `entryId` | `string?` | Optional. Scope results to a single entry |
+| `limit` | `int?` | Max records per page |
+| `user` | `string?` | Concur login ID; defaults to `ALL` |
+
+### GetAllocationsAsync
+
+Retrieves all allocations for a report. Results can optionally be scoped to a specific entry or itemization.
+
+```csharp
+// All allocations for the report
+List<AllocationDto> allocations = await concur.GetAllocationsAsync(
+    reportId: "ABC123");
+
+// Scoped to a specific entry
+List<AllocationDto> allocations = await concur.GetAllocationsAsync(
+    reportId: "ABC123",
+    entryId:  "E456");
+
+// Scoped to a specific itemization
+List<AllocationDto> allocations = await concur.GetAllocationsAsync(
+    reportId:       "ABC123",
+    itemizationId:  "ITM789");
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `reportId` | `string` | Required. The report ID |
+| `entryId` | `string?` | Optional. Filter by entry ID |
+| `itemizationId` | `string?` | Optional. Filter by itemization ID |
+| `limit` | `int?` | Max records per page |
+| `user` | `string?` | Concur login ID; defaults to `ALL` |
 
 ## DTO Reference
 
 All methods return lists of immutable `record` types. `OrgUnit*` and `Custom*` fields are `CustomFieldDto?` objects:
 
 ```csharp
-public record CustomFieldDto(
-    string? Code,
-    string? Value,
-    string? Type,
-    string? ListItemID
-);
+public record CustomFieldDto
+{
+    public string? Code      { get; init; }
+    public string? Value     { get; init; }
+    public string? Type      { get; init; }
+    public string? ListItemID { get; init; }
+}
 ```
 
-Key DTO types: `ReportDto`, `EntryDto`, `ItemizationDto`, `AllocationDto`.
+Key DTO types: `ReportDto`, `EntryDto` (includes `JourneyDto? Journey` for mileage expenses), `ItemizationDto`, `AllocationDto`.
+
+Fields marked `required` in the API are non-nullable with the C# `required` modifier; all other fields are nullable.
 
 ## ConcurOptions Reference
 
