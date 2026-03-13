@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace ConcurExpense.Models;
 
 public record AllocationDto : ExpenseBaseDto
@@ -10,6 +12,7 @@ public record AllocationDto : ExpenseBaseDto
 
     // Optional fields
     public string? AccountCode2 { get; init; }
+    [JsonPropertyName("AccountCode1")]
     public string? AccountNumber { get; init; }
 
     // Custom fields
