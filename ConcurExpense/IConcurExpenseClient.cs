@@ -25,10 +25,13 @@ public interface IConcurExpenseClient
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Retrieves all itemizations for all entries within the given report, automatically paging through results.
+    /// Retrieves itemizations, automatically paging through results.
+    /// If <paramref name="entryId"/> is provided, retrieves itemizations for that specific entry only.
+    /// Otherwise retrieves all itemizations for the report.
     /// </summary>
     Task<List<ItemizationDto>> GetItemizationsAsync(
         string reportId,
+        string? entryId = null,
         int? limit = null,
         string? user = null,
         CancellationToken cancellationToken = default);

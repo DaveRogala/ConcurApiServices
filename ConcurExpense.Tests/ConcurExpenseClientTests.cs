@@ -249,12 +249,33 @@ public class ConcurExpenseClientTests
     // ── GetItemizationsAsync ─────────────────────────────────────────────────
 
     [Fact]
-    public async Task GetItemizations_FetchesEntriesThenItemizationsForEachItemizedEntry()
+    public async Task GetItemizations_WithoutEntryId_UsesReportLevelPath()
+    {
+        var (client, handler) = ClientFactory.Create(baseUrl: "https://api.example.com");
+        handler.Enqueue(JsonPayloads.ItemizationPage("E1", "RPT1", ids: ["ITM1"]));
+
+        await client.GetItemizationsAsync("RPT1");
+
+        Assert.Contains("/reports/RPT1/entries/itemizations", handler.Requests[0].RequestUri!.AbsolutePath);
+        Assert.Single(handler.Requests);
+    }
+
+    [Fact]
+    public async Task GetItemizations_WithEntryId_UsesEntryLevelPath()
+    {
+        var (client, handler) = ClientFactory.Create(baseUrl: "https://api.example.com");
+        handler.Enqueue(JsonPayloads.ItemizationPage("E1", "RPT1", ids: ["ITM1"]));
+
+        await client.GetItemizationsAsync("RPT1", entryId: "E1");
+
+        Assert.Contains("/reports/RPT1/entries/E1/itemizations", handler.Requests[0].RequestUri!.AbsolutePath);
+        Assert.Single(handler.Requests);
+    }
+
+    [Fact]
+    public async Task GetItemizations_ReturnsMappedItems()
     {
         var (client, handler) = ClientFactory.Create();
-        // First call: entries (one itemized)
-        handler.Enqueue(JsonPayloads.EntryPage("RPT1", isItemized: true, ids: ["E1"]));
-        // Second call: itemizations for E1
         handler.Enqueue(JsonPayloads.ItemizationPage("E1", "RPT1", ids: ["ITM1", "ITM2"]));
 
         var items = await client.GetItemizationsAsync("RPT1");
@@ -263,51 +284,12 @@ public class ConcurExpenseClientTests
         Assert.Equal("ITM1", items[0].ID);
         Assert.Equal("E1", items[0].EntryID);
         Assert.Equal("RPT1", items[0].ReportID);
-        Assert.Equal(2, handler.Requests.Count);
-    }
-
-    [Fact]
-    public async Task GetItemizations_SkipsNonItemizedEntries()
-    {
-        var (client, handler) = ClientFactory.Create();
-        // Two entries: first not itemized, second itemized
-        handler.Enqueue($$"""
-            {
-              "Items": [
-                { "ID": "E1", "ReportID": "RPT1", "ExpenseTypeCode": "MEALS", "TransactionAmount": 10.00, "TransactionCurrencyCode": "USD", "TransactionDate": "2024-01-10T00:00:00", "PaymentTypeID": "CASH", "IsItemized": false },
-                { "ID": "E2", "ReportID": "RPT1", "ExpenseTypeCode": "MEALS", "TransactionAmount": 20.00, "TransactionCurrencyCode": "USD", "TransactionDate": "2024-01-10T00:00:00", "PaymentTypeID": "CASH", "IsItemized": true  }
-              ],
-              "NextPage": null
-            }
-            """);
-        // Only one itemizations call — for E2
-        handler.Enqueue(JsonPayloads.ItemizationPage("E2", "RPT1", ids: ["ITM1"]));
-
-        var items = await client.GetItemizationsAsync("RPT1");
-
-        Assert.Single(items);
-        Assert.Equal("E2", items[0].EntryID);
-        // Entries + 1 itemizations call (not 2)
-        Assert.Equal(2, handler.Requests.Count);
-    }
-
-    [Fact]
-    public async Task GetItemizations_ReturnsEmptyWhenNoItemizedEntries()
-    {
-        var (client, handler) = ClientFactory.Create();
-        handler.Enqueue(JsonPayloads.EntryPage("RPT1", isItemized: false, ids: ["E1"]));
-
-        var items = await client.GetItemizationsAsync("RPT1");
-
-        Assert.Empty(items);
-        Assert.Single(handler.Requests); // Only the entries call
     }
 
     [Fact]
     public async Task GetItemizations_MapsCustomFieldObjects()
     {
         var (client, handler) = ClientFactory.Create();
-        handler.Enqueue(JsonPayloads.EntryPage("RPT1", isItemized: true, ids: ["E1"]));
         handler.Enqueue(JsonPayloads.ItemizationPage("E1", "RPT1", ids: ["ITM1"]));
 
         var items = await client.GetItemizationsAsync("RPT1");
@@ -315,6 +297,18 @@ public class ConcurExpenseClientTests
         Assert.NotNull(items[0].Custom1);
         Assert.Equal("C1", items[0].Custom1!.Code);
         Assert.Equal("Item Value", items[0].Custom1!.Value);
+    }
+
+    [Fact]
+    public async Task GetItemizations_DefaultsUserToAll()
+    {
+        var (client, handler) = ClientFactory.Create();
+        handler.Enqueue(JsonPayloads.EmptyPage());
+
+        await client.GetItemizationsAsync("RPT1");
+
+        var query = HttpUtility.ParseQueryString(handler.Requests[0].RequestUri!.Query);
+        Assert.Equal("ALL", query["user"]);
     }
 
     [Fact]

@@ -13,6 +13,7 @@ internal class ConcurExpenseClient : IConcurExpenseClient
     private const string ReportsPath = "/expense/expensereport/v3.0/reports";
     private const string EntriesPath = "/expense/expensereport/v3.0/reports/{0}/entries";
     private const string ItemizationsPath = "/expense/expensereport/v3.0/reports/{0}/entries/{1}/itemizations";
+    private const string ItemizationsReportPath = "/expense/expensereport/v3.0/reports/{0}/entries/itemizations";
     private const string AllocationsPath = "/expense/expensereport/v3.0/allocations";
 
     private readonly IHttpClientFactory _httpClientFactory;
@@ -81,42 +82,33 @@ internal class ConcurExpenseClient : IConcurExpenseClient
 
     public async Task<List<ItemizationDto>> GetItemizationsAsync(
         string reportId,
+        string? entryId = null,
         int? limit = null,
         string? user = null,
         CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(reportId);
 
-        _logger.LogInformation("Fetching Concur itemizations for report {ReportId}.", reportId);
-
-        // Fetch all entries first, then gather itemizations for each itemized entry
-        var entries = await GetEntriesAsync(reportId, limit, user, cancellationToken);
-        var itemizedEntries = entries.Where(e => e.IsItemized == true).ToList();
-
-        _logger.LogDebug("Found {ItemizedCount} itemized entries out of {TotalCount} for report {ReportId}.",
-            itemizedEntries.Count, entries.Count, reportId);
-
-        var allItemizations = new List<ItemizationDto>();
-
-        foreach (var entry in itemizedEntries)
+        var query = BuildQuery(q =>
         {
-            if (string.IsNullOrWhiteSpace(entry.ID)) continue;
+            q["user"] = user ?? "ALL";
+            if (limit.HasValue) q["limit"] = limit.Value.ToString();
+        });
 
-            var query = BuildQuery(q =>
-            {
-                q["user"] = user ?? "ALL";
-                if (limit.HasValue) q["limit"] = limit.Value.ToString();
-            });
-
-            var path = string.Format(ItemizationsPath,
-                Uri.EscapeDataString(reportId),
-                Uri.EscapeDataString(entry.ID));
-            var url = $"{_baseUrl}{path}?{query}";
-
-            allItemizations.AddRange(await FetchAllPagesAsync<ItemizationDto>(url, cancellationToken));
+        string path;
+        if (!string.IsNullOrWhiteSpace(entryId))
+        {
+            path = string.Format(ItemizationsPath, Uri.EscapeDataString(reportId), Uri.EscapeDataString(entryId));
+            _logger.LogInformation("Fetching Concur itemizations for report {ReportId}, entry {EntryId}.", reportId, entryId);
+        }
+        else
+        {
+            path = string.Format(ItemizationsReportPath, Uri.EscapeDataString(reportId));
+            _logger.LogInformation("Fetching Concur itemizations for report {ReportId}.", reportId);
         }
 
-        return allItemizations;
+        var url = $"{_baseUrl}{path}?{query}";
+        return await FetchAllPagesAsync<ItemizationDto>(url, cancellationToken);
     }
 
     public async Task<List<AllocationDto>> GetAllocationsAsync(
