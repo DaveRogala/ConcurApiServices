@@ -53,27 +53,69 @@ internal class ConcurExpenseClient : IConcurExpenseClient
         _baseUrl = options.Value.BaseUrl.TrimEnd('/');
     }
 
-    public async Task<List<ReportDto>> GetReportsAsync(
+    public Task<List<ReportDto>> GetReportsAsync(
         int? limit = null,
         DateTime? modifiedDateBefore = null,
         DateTime? modifiedDateAfter = null,
         string? user = null,
         string? approvalStatusCode = null,
         CancellationToken cancellationToken = default)
+        => GetReportsAsync(new ReportQueryOptions
+        {
+            Limit = limit,
+            ModifiedDateBefore = modifiedDateBefore,
+            ModifiedDateAfter = modifiedDateAfter,
+            User = user,
+            ApprovalStatusCode = approvalStatusCode,
+        }, cancellationToken);
+
+    public async Task<List<ReportDto>> GetReportsAsync(
+        ReportQueryOptions options,
+        CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(options);
+
         var query = BuildQuery(q =>
         {
-            q["user"] = user ?? "ALL";
-            if (limit.HasValue) q["limit"] = limit.Value.ToString();
-            if (modifiedDateBefore.HasValue) q["modifiedDateBefore"] = modifiedDateBefore.Value.ToString("yyyy-MM-ddTHH:mm:ss");
-            if (modifiedDateAfter.HasValue) q["modifiedDateAfter"] = modifiedDateAfter.Value.ToString("yyyy-MM-ddTHH:mm:ss");
-            if (!string.IsNullOrWhiteSpace(approvalStatusCode)) q["approvalStatusCode"] = approvalStatusCode;
+            q["user"] = options.User ?? "ALL";
+            if (options.Limit.HasValue)                       q["limit"]                        = options.Limit.Value.ToString();
+            if (options.ApprovalStatusCode is { Length: > 0 }) q["approvalStatusCode"]           = options.ApprovalStatusCode;
+            if (options.PaymentStatusCode is { Length: > 0 })  q["paymentStatusCode"]            = options.PaymentStatusCode;
+            if (options.CurrencyCode is { Length: > 0 })       q["currencyCode"]                 = options.CurrencyCode;
+            if (options.PaymentType is { Length: > 0 })        q["paymentType"]                  = options.PaymentType;
+            if (options.ReimbursementMethod is { Length: > 0 }) q["reimbursementMethod"]         = options.ReimbursementMethod;
+            if (options.ApproverLoginID is { Length: > 0 })    q["approverLoginID"]              = options.ApproverLoginID;
+            if (options.ExpenseTypeCode is { Length: > 0 })    q["expenseTypeCode"]              = options.ExpenseTypeCode;
+            if (options.AttendeeTypeCode is { Length: > 0 })   q["attendeeTypeCode"]             = options.AttendeeTypeCode;
+            if (options.CountryCode is { Length: > 0 })        q["countryCode"]                  = options.CountryCode;
+            if (options.BatchID is { Length: > 0 })            q["batchID"]                      = options.BatchID;
+            if (options.VendorName is { Length: > 0 })         q["vendorName"]                   = options.VendorName;
+            if (options.ExpenseGroupConfigID is { Length: > 0 }) q["expenseGroupConfigID"]       = options.ExpenseGroupConfigID;
+            if (options.HasVAT.HasValue)                       q["hasVAT"]                       = options.HasVAT.Value.ToString().ToLowerInvariant();
+            if (options.HasImages.HasValue)                    q["hasImages"]                    = options.HasImages.Value.ToString().ToLowerInvariant();
+            if (options.HasAttendees.HasValue)                 q["hasAttendees"]                 = options.HasAttendees.Value.ToString().ToLowerInvariant();
+            if (options.HasBillableExpenses.HasValue)          q["hasBillableExpenses"]          = options.HasBillableExpenses.Value.ToString().ToLowerInvariant();
+            if (options.IsTestUser.HasValue)                   q["isTestUser"]                   = options.IsTestUser.Value.ToString().ToLowerInvariant();
+            if (options.EntryTransactionDateBefore.HasValue)   q["entryTransactionDateBefore"]   = options.EntryTransactionDateBefore.Value.ToString("yyyy-MM-ddTHH:mm:ss");
+            if (options.EntryTransactionDateAfter.HasValue)    q["entryTransactionDateAfter"]    = options.EntryTransactionDateAfter.Value.ToString("yyyy-MM-ddTHH:mm:ss");
+            if (options.CreateDateBefore.HasValue)             q["createDateBefore"]             = options.CreateDateBefore.Value.ToString("yyyy-MM-ddTHH:mm:ss");
+            if (options.CreateDateAfter.HasValue)              q["createDateAfter"]              = options.CreateDateAfter.Value.ToString("yyyy-MM-ddTHH:mm:ss");
+            if (options.UserDefinedDateBefore.HasValue)        q["userDefinedDateBefore"]        = options.UserDefinedDateBefore.Value.ToString("yyyy-MM-ddTHH:mm:ss");
+            if (options.UserDefinedDateAfter.HasValue)         q["userDefinedDateAfter"]         = options.UserDefinedDateAfter.Value.ToString("yyyy-MM-ddTHH:mm:ss");
+            if (options.SubmitDateBefore.HasValue)             q["submitDateBefore"]             = options.SubmitDateBefore.Value.ToString("yyyy-MM-ddTHH:mm:ss");
+            if (options.SubmitDateAfter.HasValue)              q["submitDateAfter"]              = options.SubmitDateAfter.Value.ToString("yyyy-MM-ddTHH:mm:ss");
+            if (options.ProcessingPaymentDateBefore.HasValue)  q["processingPaymentDateBefore"]  = options.ProcessingPaymentDateBefore.Value.ToString("yyyy-MM-ddTHH:mm:ss");
+            if (options.ProcessingPaymentDateAfter.HasValue)   q["processingPaymentDateAfter"]   = options.ProcessingPaymentDateAfter.Value.ToString("yyyy-MM-ddTHH:mm:ss");
+            if (options.PaidDateBefore.HasValue)               q["paidDateBefore"]               = options.PaidDateBefore.Value.ToString("yyyy-MM-ddTHH:mm:ss");
+            if (options.PaidDateAfter.HasValue)                q["paidDateAfter"]                = options.PaidDateAfter.Value.ToString("yyyy-MM-ddTHH:mm:ss");
+            if (options.ModifiedDateBefore.HasValue)           q["modifiedDateBefore"]           = options.ModifiedDateBefore.Value.ToString("yyyy-MM-ddTHH:mm:ss");
+            if (options.ModifiedDateAfter.HasValue)            q["modifiedDateAfter"]            = options.ModifiedDateAfter.Value.ToString("yyyy-MM-ddTHH:mm:ss");
         });
 
         var url = $"{_baseUrl}{ReportsPath}?{query}";
 
         _logger.LogInformation("Fetching Concur reports with user={User}, approvalStatusCode={ApprovalStatusCode}.",
-            user ?? "ALL", approvalStatusCode);
+            options.User ?? "ALL", options.ApprovalStatusCode);
 
         return await FetchAllPagesAsync<ReportDto>(url, cancellationToken);
     }

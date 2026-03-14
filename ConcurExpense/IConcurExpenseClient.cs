@@ -16,6 +16,14 @@ public interface IConcurExpenseClient
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Retrieves all expense reports matching the given filters, automatically paging through results.
+    /// Accepts the full set of query parameters supported by the Concur Reports v3 API.
+    /// </summary>
+    Task<List<ReportDto>> GetReportsAsync(
+        ReportQueryOptions options,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Retrieves all expense entries for the given report, automatically paging through results.
     /// </summary>
     Task<List<EntryDto>> GetEntriesAsync(
