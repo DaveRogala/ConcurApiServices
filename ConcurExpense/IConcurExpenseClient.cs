@@ -27,7 +27,7 @@ public interface IConcurExpenseClient
     /// Retrieves all expense entries for the given report, automatically paging through results.
     /// </summary>
     Task<List<EntryDto>> GetEntriesAsync(
-        string reportId,
+        string? reportId,
         int? limit = null,
         string? user = null,
         CancellationToken cancellationToken = default);
