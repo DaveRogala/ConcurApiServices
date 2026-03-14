@@ -218,19 +218,6 @@ public class ConcurExpenseClientTests
         Assert.Equal("RPT-XYZ", query["reportID"]);
     }
 
-    [Fact]
-    public async Task GetEntries_ThrowsForNullReportId()
-    {
-        var (client, _) = ClientFactory.Create();
-        await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetEntriesAsync((string)null!));
-    }
-
-    [Fact]
-    public async Task GetEntries_ThrowsForEmptyReportId()
-    {
-        var (client, _) = ClientFactory.Create();
-        await Assert.ThrowsAsync<ArgumentException>(() => client.GetEntriesAsync(string.Empty));
-    }
 
     [Fact]
     public async Task GetEntries_PaginatesThroughAllPages()

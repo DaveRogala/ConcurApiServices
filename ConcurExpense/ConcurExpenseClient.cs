@@ -121,19 +121,16 @@ internal class ConcurExpenseClient : IConcurExpenseClient
     }
 
     public Task<List<EntryDto>> GetEntriesAsync(
-        string reportId,
+        string? reportId,
         int? limit = null,
         string? user = null,
         CancellationToken cancellationToken = default)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(reportId);
-        return GetEntriesAsync(new EntryQueryOptions
+        => GetEntriesAsync(new EntryQueryOptions
         {
             ReportID = reportId,
             Limit = limit,
             User = user,
         }, cancellationToken);
-    }
 
     public async Task<List<EntryDto>> GetEntriesAsync(
         EntryQueryOptions options,
