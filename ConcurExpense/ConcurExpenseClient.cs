@@ -120,24 +120,48 @@ internal class ConcurExpenseClient : IConcurExpenseClient
         return await FetchAllPagesAsync<ReportDto>(url, cancellationToken);
     }
 
-    public async Task<List<EntryDto>> GetEntriesAsync(
+    public Task<List<EntryDto>> GetEntriesAsync(
         string reportId,
         int? limit = null,
         string? user = null,
         CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(reportId);
+        return GetEntriesAsync(new EntryQueryOptions
+        {
+            ReportID = reportId,
+            Limit = limit,
+            User = user,
+        }, cancellationToken);
+    }
+
+    public async Task<List<EntryDto>> GetEntriesAsync(
+        EntryQueryOptions options,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+
+        if (options.Limit is > 100)
+            throw new ArgumentOutOfRangeException(nameof(options), "Limit must not exceed 100.");
 
         var query = BuildQuery(q =>
         {
-            q["user"] = user ?? "ALL";
-            q["reportID"] = reportId;
-            if (limit.HasValue) q["limit"] = limit.Value.ToString();
+            q["user"] = options.User ?? "ALL";
+            if (options.ReportID is { Length: > 0 })      q["reportID"]       = options.ReportID;
+            if (options.Limit.HasValue)                   q["limit"]          = options.Limit.Value.ToString();
+            if (options.PaymentTypeID is { Length: > 0 }) q["paymentTypeID"]  = options.PaymentTypeID;
+            if (options.BatchID is { Length: > 0 })       q["batchID"]        = options.BatchID;
+            if (options.ExpenseTypeCode is { Length: > 0 }) q["expenseTypeCode"] = options.ExpenseTypeCode;
+            if (options.AttendeeTypeCode is { Length: > 0 }) q["attendeeTypeCode"] = options.AttendeeTypeCode;
+            if (options.AttendeeID is { Length: > 0 })    q["attendeeID"]     = options.AttendeeID;
+            if (options.HasVAT.HasValue)                  q["hasVAT"]         = options.HasVAT.Value.ToString().ToLowerInvariant();
+            if (options.HasAttendees.HasValue)            q["hasAttendees"]   = options.HasAttendees.Value.ToString().ToLowerInvariant();
+            if (options.IsBillable.HasValue)              q["isBillable"]     = options.IsBillable.Value.ToString().ToLowerInvariant();
         });
 
         var url = $"{_baseUrl}{EntriesPath}?{query}";
 
-        _logger.LogInformation("Fetching Concur entries for report {ReportId}.", reportId);
+        _logger.LogInformation("Fetching Concur entries for report {ReportId}.", options.ReportID);
 
         return await FetchAllPagesAsync<EntryDto>(url, cancellationToken);
     }

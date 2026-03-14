@@ -222,7 +222,7 @@ public class ConcurExpenseClientTests
     public async Task GetEntries_ThrowsForNullReportId()
     {
         var (client, _) = ClientFactory.Create();
-        await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetEntriesAsync(null!));
+        await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetEntriesAsync((string)null!));
     }
 
     [Fact]
