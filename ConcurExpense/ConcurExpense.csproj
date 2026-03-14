@@ -4,9 +4,9 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>0.2.0</Version>
-    <AssemblyVersion>0.2.0.0</AssemblyVersion>
-    <FileVersion>0.2.0.0</FileVersion>
+    <Version>0.3.0</Version>
+    <AssemblyVersion>0.3.0.0</AssemblyVersion>
+    <FileVersion>0.3.0.0</FileVersion>
     <PackageId>ConcurExpense</PackageId>
     <Authors>David Rogala</Authors>
     <Description>A .NET 8 client library for the SAP Concur Expense v3 API. Supports Reports, Entries, Itemizations, and Allocations with automatic pagination, OAuth2 token management, and built-in resilience.</Description>
