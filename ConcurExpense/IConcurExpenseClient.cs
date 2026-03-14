@@ -33,6 +33,15 @@ public interface IConcurExpenseClient
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Retrieves expense entries matching the given filters, automatically paging through results.
+    /// Accepts the full set of query parameters supported by the Concur Entries v3 API.
+    /// <paramref name="options"/>.<c>Limit</c> must not exceed 100.
+    /// </summary>
+    Task<List<EntryDto>> GetEntriesAsync(
+        EntryQueryOptions options,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Retrieves itemizations, automatically paging through results.
     /// If <paramref name="entryId"/> is provided, retrieves itemizations for that specific entry only.
     /// Otherwise retrieves all itemizations for the report.
