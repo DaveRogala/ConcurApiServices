@@ -24,13 +24,22 @@ internal class FakeHttpMessageHandler : HttpMessageHandler
     public void EnqueueError(HttpStatusCode status) =>
         _responses.Enqueue(new HttpResponseMessage(status));
 
-    protected override Task<HttpResponseMessage> SendAsync(
+    /// <summary>
+    /// Optional hook called at the start of each request, before the response is returned.
+    /// Use this to simulate latency or track concurrency in tests.
+    /// </summary>
+    public Func<Task>? OnSendAsync { get; set; }
+
+    protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request, CancellationToken cancellationToken)
     {
         _requests.Add(request);
 
+        if (OnSendAsync is not null)
+            await OnSendAsync();
+
         if (_responses.TryDequeue(out var response))
-            return Task.FromResult(response);
+            return response;
 
         throw new InvalidOperationException(
             $"FakeHttpMessageHandler has no more queued responses (request #{_requests.Count}: {request.RequestUri}).");

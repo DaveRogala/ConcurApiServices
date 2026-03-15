@@ -1,6 +1,7 @@
 using System.Net;
 using ConcurExpense.Tests.Helpers;
 using Xunit;
+using System.Threading;
 
 namespace ConcurExpense.Tests;
 
@@ -138,6 +139,44 @@ public class ResilienceTests
         var reports = await client.GetReportsAsync();
 
         Assert.Empty(reports);
+    }
+
+    // ── Parallel Call Serialization ───────────────────────────────────────────
+
+    [Fact]
+    public async Task ParallelCalls_NeverExceedOneInflightRequest()
+    {
+        var (client, handler) = ClientFactory.Create();
+
+        // 2 responses consumed by GetReportsAsync + GetEntriesAsync respectively.
+        // Empty pages work for any deserialization target (no items to parse).
+        handler.Enqueue(JsonPayloads.EmptyPage());
+        handler.Enqueue(JsonPayloads.EmptyPage());
+
+        var concurrent = 0;
+        var maxConcurrent = 0;
+
+        handler.OnSendAsync = async () =>
+        {
+            var c = Interlocked.Increment(ref concurrent);
+            // Yield so that a second task could interleave here if the lock weren't held.
+            await Task.Yield();
+            var snapshot = Volatile.Read(ref maxConcurrent);
+            while (c > snapshot)
+            {
+                var updated = Interlocked.CompareExchange(ref maxConcurrent, c, snapshot);
+                if (updated == snapshot) break;
+                snapshot = updated;
+            }
+            Interlocked.Decrement(ref concurrent);
+        };
+
+        var reportsTask = client.GetReportsAsync();
+        var entriesTask = client.GetEntriesAsync("rep-1");
+
+        await Task.WhenAll(reportsTask, entriesTask);
+
+        Assert.Equal(1, maxConcurrent);
     }
 
     [Fact]
