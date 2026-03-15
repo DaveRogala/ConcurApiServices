@@ -245,92 +245,99 @@ internal class ConcurExpenseClient : IConcurExpenseClient
 
         while (true)
         {
-            await EnforceRateLimitAsync(cancellationToken);
+            TimeSpan? retryDelay = null;
+            ApiResponse<T>? result = null;
 
-            var token = await _tokenService.GetAccessTokenAsync(cancellationToken);
-            var client = _httpClientFactory.CreateClient(ConcurHttpClients.Api);
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-            using var response = await client.GetAsync(url, cancellationToken);
-
-            // ── 429 Too Many Requests ────────────────────────────────────────
-            if (response.StatusCode == HttpStatusCode.TooManyRequests)
+            await _callLock.WaitAsync(cancellationToken);
+            try
             {
-                loopState.RateLimitCount++;
-                _consecutiveRateLimitCount++;
+                // Enforce minimum interval between calls — all callers share this lock,
+                // so only one HTTP request is in flight at a time across parallel invocations.
+                var elapsed = DateTime.UtcNow - _lastCallTime;
+                var wait = _minCallInterval - elapsed;
+                if (wait > TimeSpan.Zero)
+                    await Delay(wait, cancellationToken);
+                _lastCallTime = DateTime.UtcNow;
 
-                _logger.LogWarning(
-                    "Rate limited (429) — consecutive: {Consecutive}, this-loop: {LoopCount}.",
-                    _consecutiveRateLimitCount, loopState.RateLimitCount);
+                var token = await _tokenService.GetAccessTokenAsync(cancellationToken);
+                var client = _httpClientFactory.CreateClient(ConcurHttpClients.Api);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                if (_consecutiveRateLimitCount >= MaxConsecutiveRateLimits)
-                    throw new HttpRequestException(
-                        $"Aborting: received {MaxConsecutiveRateLimits} consecutive 429 responses from the Concur API.");
+                using var response = await client.GetAsync(url, cancellationToken);
 
-                if (loopState.RateLimitCount >= MaxRateLimitPerLoop && _minCallInterval < ThrottledMinCallInterval)
+                // ── 429 Too Many Requests ────────────────────────────────────
+                if (response.StatusCode == HttpStatusCode.TooManyRequests)
                 {
+                    loopState.RateLimitCount++;
+                    _consecutiveRateLimitCount++;
+
                     _logger.LogWarning(
-                        "Received {Count} rate-limit responses in this batch; increasing minimum call interval to {Interval}ms.",
-                        loopState.RateLimitCount, ThrottledMinCallInterval.TotalMilliseconds);
-                    _minCallInterval = ThrottledMinCallInterval;
+                        "Rate limited (429) — consecutive: {Consecutive}, this-loop: {LoopCount}.",
+                        _consecutiveRateLimitCount, loopState.RateLimitCount);
+
+                    if (_consecutiveRateLimitCount >= MaxConsecutiveRateLimits)
+                        throw new HttpRequestException(
+                            $"Aborting: received {MaxConsecutiveRateLimits} consecutive 429 responses from the Concur API.");
+
+                    if (loopState.RateLimitCount >= MaxRateLimitPerLoop && _minCallInterval < ThrottledMinCallInterval)
+                    {
+                        _logger.LogWarning(
+                            "Received {Count} rate-limit responses in this batch; increasing minimum call interval to {Interval}ms.",
+                            loopState.RateLimitCount, ThrottledMinCallInterval.TotalMilliseconds);
+                        _minCallInterval = ThrottledMinCallInterval;
+                    }
+
+                    retryDelay = RateLimitRetryDelay;
                 }
 
-                await Delay(RateLimitRetryDelay, cancellationToken);
-                continue;
-            }
-
-            // ── 5xx Server Error ─────────────────────────────────────────────
-            if ((int)response.StatusCode >= 500)
-            {
-                serverErrorAttempts++;
-
-                if (serverErrorAttempts > MaxServerErrorRetries)
+                // ── 5xx Server Error ─────────────────────────────────────────
+                else if ((int)response.StatusCode >= 500)
                 {
-                    _logger.LogError(
-                        "Server error {StatusCode} persists after {Retries} retries; giving up on {Url}.",
-                        response.StatusCode, MaxServerErrorRetries, url);
-                    response.EnsureSuccessStatusCode(); // throws HttpRequestException
+                    serverErrorAttempts++;
+
+                    if (serverErrorAttempts > MaxServerErrorRetries)
+                    {
+                        _logger.LogError(
+                            "Server error {StatusCode} persists after {Retries} retries; giving up on {Url}.",
+                            response.StatusCode, MaxServerErrorRetries, url);
+                        response.EnsureSuccessStatusCode(); // throws HttpRequestException
+                    }
+
+                    _logger.LogWarning(
+                        "Server error {StatusCode} (attempt {Attempt}/{Max}), retrying in {Delay}s.",
+                        response.StatusCode, serverErrorAttempts, MaxServerErrorRetries,
+                        ServerErrorRetryDelay.TotalSeconds);
+
+                    retryDelay = ServerErrorRetryDelay;
                 }
 
-                _logger.LogWarning(
-                    "Server error {StatusCode} (attempt {Attempt}/{Max}), retrying in {Delay}s.",
-                    response.StatusCode, serverErrorAttempts, MaxServerErrorRetries,
-                    ServerErrorRetryDelay.TotalSeconds);
+                // ── Success ──────────────────────────────────────────────────
+                else
+                {
+                    response.EnsureSuccessStatusCode();
+                    _consecutiveRateLimitCount = 0;
 
-                await Delay(ServerErrorRetryDelay, cancellationToken);
-                continue;
+                    result = await response.Content.ReadFromJsonAsync<ApiResponse<T>>(cancellationToken: cancellationToken)
+                        ?? throw new InvalidOperationException($"Failed to deserialize API response from {url}.");
+                }
+            }
+            finally
+            {
+                _callLock.Release();
             }
 
-            // ── Success ──────────────────────────────────────────────────────
-            response.EnsureSuccessStatusCode();
-            _consecutiveRateLimitCount = 0;
+            if (result is not null)
+                return result;
 
-            return await response.Content.ReadFromJsonAsync<ApiResponse<T>>(cancellationToken: cancellationToken)
-                ?? throw new InvalidOperationException($"Failed to deserialize API response from {url}.");
+            // Delay outside the lock so other callers can proceed during retry waits.
+            await Delay(retryDelay!.Value, cancellationToken);
         }
     }
 
     private sealed class LoopState
     {
         public int RateLimitCount { get; set; }
-    }
-
-    private async Task EnforceRateLimitAsync(CancellationToken cancellationToken)
-    {
-        await _callLock.WaitAsync(cancellationToken);
-        try
-        {
-            var elapsed = DateTime.UtcNow - _lastCallTime;
-            var wait = _minCallInterval - elapsed;
-            if (wait > TimeSpan.Zero)
-                await Delay(wait, cancellationToken);
-            _lastCallTime = DateTime.UtcNow;
-        }
-        finally
-        {
-            _callLock.Release();
-        }
     }
 
     private static string BuildQuery(Action<Dictionary<string, string>> configure)
