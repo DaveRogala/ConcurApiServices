@@ -19,11 +19,13 @@ internal class ConcurExpenseClient : IConcurExpenseClient
     private const int MaxServerErrorRetries = 3;
     private const int MaxRateLimitPerLoop = 5;
     private const int MaxConsecutiveRateLimits = 5;
+    private const int MaxBadRequestRetries = 3;
 
     private static readonly TimeSpan DefaultMinCallInterval = TimeSpan.FromMilliseconds(100);
     private static readonly TimeSpan ThrottledMinCallInterval = TimeSpan.FromSeconds(1);
     private static readonly TimeSpan ServerErrorRetryDelay = TimeSpan.FromSeconds(10);
     private static readonly TimeSpan RateLimitRetryDelay = TimeSpan.FromSeconds(10);
+    private static readonly TimeSpan BadRequestRetryDelay = TimeSpan.FromSeconds(10);
 
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IConcurTokenService _tokenService;
@@ -242,6 +244,7 @@ internal class ConcurExpenseClient : IConcurExpenseClient
         CancellationToken cancellationToken)
     {
         var serverErrorAttempts = 0;
+        var badRequestAttempts = 0;
 
         while (true)
         {
@@ -310,6 +313,28 @@ internal class ConcurExpenseClient : IConcurExpenseClient
                         ServerErrorRetryDelay.TotalSeconds);
 
                     retryDelay = ServerErrorRetryDelay;
+                }
+
+                // ── 400 Bad Request ───────────────────────────────────────────
+                else if (response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    badRequestAttempts++;
+
+                    if (badRequestAttempts > MaxBadRequestRetries)
+                    {
+                        var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+                        _logger.LogError(
+                            "Bad request (400) persists after {Retries} retries; giving up. Request URL: {Url} Response: {ResponseBody}",
+                            MaxBadRequestRetries, url, responseBody);
+                        response.EnsureSuccessStatusCode();
+                    }
+
+                    _logger.LogWarning(
+                        "Bad request (400) on attempt {Attempt}/{Max}, retrying in {Delay}s. URL: {Url}",
+                        badRequestAttempts, MaxBadRequestRetries,
+                        BadRequestRetryDelay.TotalSeconds, url);
+
+                    retryDelay = BadRequestRetryDelay;
                 }
 
                 // ── Success ──────────────────────────────────────────────────

@@ -80,6 +80,50 @@ public class ResilienceTests
         Assert.Single(handler.Requests); // no retries
     }
 
+    // ── 400 Bad Request Retry ─────────────────────────────────────────────────
+
+    [Fact]
+    public async Task BadRequest_SingleRetry_ThenSucceeds()
+    {
+        var (client, handler) = ClientFactory.Create();
+        handler.EnqueueError(HttpStatusCode.BadRequest);
+        handler.Enqueue(JsonPayloads.ReportPage(ids: ["R1"]));
+
+        var reports = await client.GetReportsAsync();
+
+        Assert.Single(reports);
+        Assert.Equal(2, handler.Requests.Count);
+    }
+
+    [Fact]
+    public async Task BadRequest_RetriesUpToThreeTimes_ThenSucceeds()
+    {
+        var (client, handler) = ClientFactory.Create();
+        handler.EnqueueError(HttpStatusCode.BadRequest);
+        handler.EnqueueError(HttpStatusCode.BadRequest);
+        handler.EnqueueError(HttpStatusCode.BadRequest);
+        handler.Enqueue(JsonPayloads.ReportPage(ids: ["R1"]));
+
+        var reports = await client.GetReportsAsync();
+
+        Assert.Single(reports);
+        Assert.Equal(4, handler.Requests.Count); // 3 failures + 1 success
+    }
+
+    [Fact]
+    public async Task BadRequest_ExceedsMaxRetries_Throws()
+    {
+        var (client, handler) = ClientFactory.Create();
+        handler.EnqueueError(HttpStatusCode.BadRequest);
+        handler.EnqueueError(HttpStatusCode.BadRequest);
+        handler.EnqueueError(HttpStatusCode.BadRequest);
+        handler.EnqueueError(HttpStatusCode.BadRequest); // 4th → should throw
+
+        await Assert.ThrowsAsync<HttpRequestException>(() => client.GetReportsAsync());
+
+        Assert.Equal(4, handler.Requests.Count); // initial + 3 retries
+    }
+
     // ── 429 Rate Limiting ────────────────────────────────────────────────────
 
     [Fact]
